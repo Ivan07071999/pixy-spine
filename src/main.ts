@@ -1,3 +1,8 @@
+import { Game } from './Game';
 import './style.css';
 
-console.log('gg');
+void (async () => {
+  const game = new Game();
+
+  await game.init();
+})();
