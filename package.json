@@ -24,9 +24,9 @@
     "vite": "^7.3.1"
   },
   "dependencies": {
+    "@esotericsoftware/spine-core": "^4.2.106",
     "@esotericsoftware/spine-pixi-v8": "~4.2.0",
     "@pixi/devtools": "^2.0.1",
-    "@pixi/spine-pixi": "^2.1.1",
     "pixi.js": "^8.16.0"
   }
 }

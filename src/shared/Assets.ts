@@ -1,12 +1,11 @@
-import '@pixi/spine-pixi';
+import '@esotericsoftware/spine-pixi-v8';
 import { Assets } from 'pixi.js';
 import skyURL from '../assets/sky.png';
 import midgroungURL from '../assets/midground.png';
-import metalPlatformURL from '../assets/metal-platform.png';
 import mainPlatform from '../assets/main-platform.png';
 import backgroundURL from '../assets/background.png';
-import atlasURL from '../assets/spineboy-pma.atlas.txt';
-import spineBoyURL from '../assets/spineboy-pro.skel?url';
+// import atlasURL from '../assets/spineboy.atlas?url';
+// import spineBoyURL from '../assets/spineboy-pro.json?url';
 
 export class AssetManager {
   private initialized: boolean;
@@ -20,42 +19,39 @@ export class AssetManager {
 
     await Assets.load([
       {
-        alias: 'spineBoy',
-        src: spineBoyURL,
-        data: {
-          atlas: atlasURL,
-        },
+        alias: 'spineAtlas',
+        src: '/spineboy/spineboy-pma.atlas',
       },
       {
-        alias: 'spineBoyAtlas',
-        src: atlasURL,
+        alias: 'sky',
+        src: skyURL,
       },
       {
         alias: 'background',
         src: backgroundURL,
       },
       {
-        alias: 'mainPlatform',
-        src: mainPlatform,
-      },
-      {
-        alias: 'metalPlatform',
-        src: metalPlatformURL,
-      },
-      {
         alias: 'midground',
         src: midgroungURL,
       },
       {
-        alias: 'sky',
-        src: skyURL,
+        alias: 'mainPlatform',
+        src: mainPlatform,
       },
     ]);
+
+    await Assets.load({
+      alias: 'spineSkeleton',
+      src: '/spineboy/spineboy-pro.skel',
+      data: {
+        atlas: 'spineAtlas',
+      },
+    });
 
     this.initialized = true;
   }
 
-  public get<T>(alias: string): T {
-    return Assets.get<T>(alias);
-  }
+  // public get<T>(alias: string): T {
+  //   return Assets.get<T>(alias);
+  // }
 }
