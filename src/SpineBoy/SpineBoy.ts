@@ -67,13 +67,14 @@ export class SpineBoy {
     timeScale = 1,
   }: {
     name: string;
-    loop: boolean;
-    timeScale: number;
+    loop?: boolean;
+    timeScale?: number;
   }): void {
     if (this.currentAnimation === name) return;
 
     const entry = this.spine.state.setAnimation(0, name, loop);
     entry.timeScale = timeScale;
+    console.log('PlayingAnimation', this.state);
   }
 
   public update(): void {
@@ -81,6 +82,15 @@ export class SpineBoy {
       this.playAnimation(animations.jump);
     }
     if (this.isAnimationPlaying(animations.jump)) return;
+    if (this.state.hover) {
+      this.playAnimation(animations.hover);
+    } else if (this.state.run) {
+      this.playAnimation(animations.run);
+    } else if (this.state.walk) {
+      this.playAnimation(animations.walk);
+    } else {
+      this.playAnimation(animations.idle);
+    }
   }
 
   private isAnimationPlaying({ name }: { name: string }) {
@@ -93,5 +103,15 @@ export class SpineBoy {
 
   public isSpawning() {
     return this.isAnimationPlaying(animations.spawn);
+  }
+
+  public get direction() {
+    return this.view.scale.x > 0 ? 1 : -1;
+  }
+
+  public set direction(value: number) {
+    const currentScale = Math.abs(this.view.scale.x);
+
+    this.view.scale.x = currentScale * value;
   }
 }

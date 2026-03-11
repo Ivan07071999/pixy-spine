@@ -47,7 +47,46 @@ export class Game {
 
       this.spineBoy.state.jump = this.controller.keys.space.pressed;
 
+      if (
+        (!this.controller.keys.left.doubleTap && this.controller.keys.left.pressed) ||
+        (!this.controller.keys.right.doubleTap && this.controller.keys.right.pressed)
+      ) {
+        this.spineBoy.state.walk =
+          this.controller.keys.left.pressed || this.controller.keys.right.pressed;
+      } else if (this.controller.keys.left.doubleTap) {
+        this.spineBoy.state.run = this.controller.keys.left.doubleTap;
+      } else if (this.controller.keys.right.doubleTap) {
+        this.spineBoy.state.run = this.controller.keys.right.doubleTap;
+      } else {
+        this.spineBoy.state.run = false;
+        this.spineBoy.state.walk = false;
+      }
+
+      if (this.controller.keys.left.pressed) {
+        this.spineBoy.direction = -1;
+      } else if (this.controller.keys.right.pressed) {
+        this.spineBoy.direction = 1;
+      }
+
+      if (this.controller.keys.down.pressed) {
+        this.spineBoy.state.hover = this.controller.keys.down.pressed;
+      } else {
+        this.spineBoy.state.hover = false;
+      }
+
       this.spineBoy.update();
+      let speed = 0;
+
+      if (this.spineBoy.state.run) {
+        speed = 3.5;
+      } else if (this.spineBoy.state.hover) {
+        speed = 7;
+      } else if (this.spineBoy.state.walk) {
+        speed = 1.2;
+      }
+
+      if (this.spineBoy.state.walk || this.spineBoy.state.run)
+        this.scene.position -= speed * this.spineBoy.direction;
     });
   }
 }

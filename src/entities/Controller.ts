@@ -46,6 +46,7 @@ export class Controller {
 
     this.keys[key].doubleTap = this.keys[key].doubleTap || now - this.keys[key].timestamp < 300;
     this.keys[key].pressed = true;
+    console.log('Нажали keys', this.keys);
   }
 
   public handleKeyUp(event: KeyboardEvent): void {
@@ -62,5 +63,6 @@ export class Controller {
     } else {
       this.keys[key].timestamp = now;
     }
+    console.log('Отпустили keys', this.keys);
   }
 }

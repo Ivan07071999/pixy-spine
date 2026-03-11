@@ -47,7 +47,13 @@ export class Scene {
     this.view.addChild(this.sky, this.background, this.midground, this.mainPlatform);
   }
 
-  public update(delta: number): void {
-    this.background.tilePosition.x += 0.5 * delta;
+  public get position(): number {
+    return this.mainPlatform.tilePosition.x;
+  }
+
+  public set position(value: number) {
+    this.background.tilePosition.x = value * 0.2;
+    this.midground.tilePosition.x = value * 0.3;
+    this.mainPlatform.tilePosition.x = value;
   }
 }
