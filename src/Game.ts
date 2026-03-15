@@ -1,4 +1,4 @@
-import { Application } from 'pixi.js';
+import { Application, Rectangle } from 'pixi.js';
 import { AssetManager } from './shared/Assets';
 import { initDevtools } from '@pixi/devtools';
 import { Scene } from './entities/Scene/Scene';
@@ -40,6 +40,15 @@ export class Game {
 
     this.spineBoy.spawn();
     this.startLoop();
+  }
+
+  private rectIntersect(r1: Rectangle, r2: Rectangle): boolean {
+    return !(
+      r2.x > r1.x + r1.width ||
+      r2.x + r2.width < r1.x ||
+      r2.y > r1.y + r1.height ||
+      r2.y + r2.height < r1.y
+    );
   }
 
   private startLoop(): void {
@@ -91,6 +100,37 @@ export class Game {
       }
 
       this.scene.position = -this.spineBoy.view.x + this.app.screen.width / 2.5;
+
+      if (this.controller.keys.space.pressed && this.spineBoy.isGrounded) {
+        this.spineBoy.jump();
+      }
+
+      this.spineBoy.vy += this.spineBoy.gravity;
+      this.spineBoy.view.y += this.spineBoy.vy;
+
+      this.spineBoy.isGrounded = false;
+
+      const charBounds = this.spineBoy.getBounds();
+
+      for (const platform of this.scene.platforms) {
+        const platBounds = new Rectangle(platform.x, platform.y, platform.width, platform.height);
+        if (this.rectIntersect(charBounds, platBounds)) {
+          if (this.spineBoy.vy > 0) {
+            this.spineBoy.view.y = platform.y;
+            this.spineBoy.vy = 0;
+            this.spineBoy.isGrounded = true;
+          }
+        }
+      }
+      const groundY = this.app.screen.height - this.scene.mainPlatform.height / 2.37;
+
+      if (this.spineBoy.view.y > groundY) {
+        this.spineBoy.view.y = groundY;
+        this.spineBoy.vy = 0;
+        this.spineBoy.isGrounded = true;
+      }
+
+      this.spineBoy.update();
     });
   }
 }

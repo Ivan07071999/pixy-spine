@@ -1,5 +1,5 @@
 import { Spine } from '@esotericsoftware/spine-pixi-v8';
-import { Container, Point } from 'pixi.js';
+import { Container, Point, Rectangle } from 'pixi.js';
 
 const animations = {
   idle: {
@@ -31,6 +31,11 @@ export class SpineBoy {
   view: Container;
   spine: Spine;
   state: { walk: boolean; run: boolean; hover: boolean; jump: boolean };
+
+  public vy: number = 0;
+  public gravity: number = 0.8;
+  public isGrounded: boolean = false;
+  public jumpPower: number = -15;
 
   constructor() {
     this.state = {
@@ -113,5 +118,19 @@ export class SpineBoy {
     const currentScale = Math.abs(this.view.scale.x);
 
     this.view.scale.x = currentScale * value;
+  }
+
+  public getBounds(): Rectangle {
+    const width = 50;
+    const height = 100;
+
+    return new Rectangle(this.view.x - width / 2, this.view.y - height, width, height);
+  }
+
+  public jump(): void {
+    if (this.isGrounded) {
+      this.vy = this.jumpPower;
+      this.isGrounded = false;
+    }
   }
 }

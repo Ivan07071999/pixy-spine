@@ -13,10 +13,11 @@ export class Scene {
   public view: Container;
   public worldLayer: Container;
   public backgroundLayer: Container;
+  public platforms: PlatformData[] = [];
   private background: TilingSprite;
   private midground: TilingSprite;
   private sky: TilingSprite;
-  private mainPlatform: TilingSprite;
+  public mainPlatform: TilingSprite;
 
   constructor(width: number, height: number) {
     this.view = new Container();
@@ -80,7 +81,8 @@ export class Scene {
     platformData.data.map((item: PlatformData) => {
       const platform = new Platform(item.x, item.y, item.width, item.height);
       this.worldLayer.addChild(platform);
+      this.platforms.push(item);
     });
-    console.log('Загрузили платформы', platformData);
+    console.log('Загрузили платформы', this.platforms);
   }
 }
