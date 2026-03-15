@@ -1,7 +1,7 @@
 import { Application } from 'pixi.js';
 import { AssetManager } from './shared/Assets';
 import { initDevtools } from '@pixi/devtools';
-import { Scene } from './Scene/Scene';
+import { Scene } from './entities/Scene/Scene';
 import { SpineBoy } from './SpineBoy/SpineBoy';
 import { Controller } from './entities/Controller';
 
@@ -35,7 +35,8 @@ export class Game {
     this.spineBoy = new SpineBoy();
 
     await initDevtools(this.app);
-    this.app.stage.addChild(this.scene.view, this.spineBoy.view);
+    this.app.stage.addChild(this.scene.view);
+    this.scene.worldLayer.addChild(this.spineBoy.view);
 
     this.spineBoy.spawn();
     this.startLoop();
@@ -85,8 +86,11 @@ export class Game {
         speed = 1.2;
       }
 
-      if (this.spineBoy.state.walk || this.spineBoy.state.run)
-        this.scene.position -= speed * this.spineBoy.direction;
+      if (this.spineBoy.state.walk || this.spineBoy.state.run || this.spineBoy.state.hover) {
+        this.spineBoy.view.x += speed * this.spineBoy.direction;
+      }
+
+      this.scene.position = -this.spineBoy.view.x + this.app.screen.width / 2.5;
     });
   }
 }

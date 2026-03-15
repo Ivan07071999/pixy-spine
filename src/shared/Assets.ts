@@ -4,8 +4,7 @@ import skyURL from '../assets/sky.png';
 import midgroungURL from '../assets/midground.png';
 import mainPlatform from '../assets/main-platform.png';
 import backgroundURL from '../assets/background.png';
-// import atlasURL from '../assets/spineboy.atlas?url';
-// import spineBoyURL from '../assets/spineboy-pro.json?url';
+import metalPlatformURL from '../assets/metal-platform.png';
 
 export class AssetManager {
   private initialized: boolean;
@@ -38,6 +37,10 @@ export class AssetManager {
         alias: 'mainPlatform',
         src: mainPlatform,
       },
+      {
+        alias: 'metalPlatform',
+        src: metalPlatformURL,
+      },
     ]);
 
     await Assets.load({
@@ -50,8 +53,4 @@ export class AssetManager {
 
     this.initialized = true;
   }
-
-  // public get<T>(alias: string): T {
-  //   return Assets.get<T>(alias);
-  // }
 }

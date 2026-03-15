@@ -1,7 +1,18 @@
 import { Container, TilingSprite, Texture } from 'pixi.js';
+import platformData from '../../shared/firstLvl.json';
+import { Platform } from './Platform';
+
+interface PlatformData {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 
 export class Scene {
   public view: Container;
+  public worldLayer: Container;
+  public backgroundLayer: Container;
   private background: TilingSprite;
   private midground: TilingSprite;
   private sky: TilingSprite;
@@ -9,6 +20,8 @@ export class Scene {
 
   constructor(width: number, height: number) {
     this.view = new Container();
+    this.backgroundLayer = new Container();
+    this.worldLayer = new Container();
 
     const backgroundTexture = Texture.from('background');
     const skyTexture = Texture.from('sky');
@@ -44,16 +57,30 @@ export class Scene {
     });
 
     this.sky.tileScale.set(1.6);
-    this.view.addChild(this.sky, this.background, this.midground, this.mainPlatform);
+    this.backgroundLayer.addChild(this.sky, this.background, this.midground, this.mainPlatform);
+    this.view.addChild(this.backgroundLayer);
+    this.view.addChild(this.worldLayer);
+
+    this.createPlatforms();
   }
 
   public get position(): number {
-    return this.mainPlatform.tilePosition.x;
+    // return this.mainPlatform.tilePosition.x;
+    return this.worldLayer.x;
   }
 
   public set position(value: number) {
+    this.worldLayer.x = value;
     this.background.tilePosition.x = value * 0.2;
     this.midground.tilePosition.x = value * 0.3;
     this.mainPlatform.tilePosition.x = value;
+  }
+
+  private createPlatforms() {
+    platformData.data.map((item: PlatformData) => {
+      const platform = new Platform(item.x, item.y, item.width, item.height);
+      this.worldLayer.addChild(platform);
+    });
+    console.log('Загрузили платформы', platformData);
   }
 }
