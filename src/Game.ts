@@ -1,4 +1,4 @@
-import { Application, Rectangle } from 'pixi.js';
+import { Application, Bounds, Rectangle } from 'pixi.js';
 import { AssetManager } from './shared/Assets';
 import { initDevtools } from '@pixi/devtools';
 import { Scene } from './entities/Scene/Scene';
@@ -42,7 +42,7 @@ export class Game {
     this.startLoop();
   }
 
-  private rectIntersect(r1: Rectangle, r2: Rectangle): boolean {
+  private rectIntersect(r1: Bounds | Rectangle, r2: Bounds | Rectangle): boolean {
     return !(
       r2.x > r1.x + r1.width ||
       r2.x + r2.width < r1.x ||
@@ -51,86 +51,136 @@ export class Game {
     );
   }
 
+  private handleInput(): void {
+    const boy = this.spineBoy;
+    const keys = this.controller.keys;
+
+    if (keys.space.pressed && boy.isGrounded) boy.jump();
+
+    boy.state.jump = !boy.isGrounded;
+
+    this.spineBoy.state.jump = this.controller.keys.space.pressed;
+
+    if (
+      (!this.controller.keys.left.doubleTap && this.controller.keys.left.pressed) ||
+      (!this.controller.keys.right.doubleTap && this.controller.keys.right.pressed)
+    ) {
+      this.spineBoy.state.walk =
+        this.controller.keys.left.pressed || this.controller.keys.right.pressed;
+    } else if (this.controller.keys.left.doubleTap) {
+      this.spineBoy.state.run = this.controller.keys.left.doubleTap;
+    } else if (this.controller.keys.right.doubleTap) {
+      this.spineBoy.state.run = this.controller.keys.right.doubleTap;
+    } else {
+      this.spineBoy.state.run = false;
+      this.spineBoy.state.walk = false;
+    }
+
+    if (this.controller.keys.left.pressed) {
+      this.spineBoy.direction = -1;
+    } else if (this.controller.keys.right.pressed) {
+      this.spineBoy.direction = 1;
+    }
+
+    if (this.controller.keys.down.pressed) {
+      this.spineBoy.state.hover = this.controller.keys.down.pressed;
+    } else {
+      this.spineBoy.state.hover = false;
+    }
+
+    let speed = 0;
+
+    if (this.spineBoy.state.run) {
+      speed = 3.5;
+    } else if (this.spineBoy.state.hover) {
+      speed = 7;
+    } else if (this.spineBoy.state.walk) {
+      speed = 1.2;
+    }
+
+    if (this.spineBoy.state.walk || this.spineBoy.state.run || this.spineBoy.state.hover) {
+      this.spineBoy.view.x += speed * this.spineBoy.direction;
+    }
+  }
+
+  // private updatePhysics() {
+  //   const boy = this.spineBoy;
+
+  //   boy.vy += boy.gravity;
+
+  //   if (boy.vy > 15) boy.vy = 15;
+
+  //   boy.view.x += boy.vx;
+  //   boy.view.y += boy.vy;
+
+  //   if (boy.vy > 0) boy.isGrounded = false;
+  // }
+
+  private resolvePlatformCollisions() {
+    const boy = this.spineBoy;
+
+    const platforms = this.scene.platforms;
+
+    const charBounds = boy.getBounds();
+
+    for (const platform of platforms) {
+      const platBounds = platform.getBounds();
+
+      if (this.rectIntersect(charBounds, platBounds)) {
+        const overlapX =
+          Math.min(charBounds.right, platBounds.right) - Math.max(charBounds.left, platBounds.left);
+        const overlapY =
+          Math.min(charBounds.bottom, platBounds.bottom) - Math.max(charBounds.top, platBounds.top);
+
+        const charCenterX = charBounds.x + charBounds.width / 2;
+        const platCenterX = platBounds.x + platBounds.width / 2;
+
+        const charCenterY = charBounds.y + charBounds.height / 2;
+        const platCenterY = platBounds.y + platBounds.height / 2;
+
+        if (overlapX < overlapY) {
+          if (charCenterX < platCenterX) {
+            boy.view.x -= overlapX;
+          } else {
+            boy.view.x += overlapX;
+          }
+          boy.vx = 0;
+        } else {
+          if (charCenterY < platCenterY) {
+            boy.view.y -= overlapY;
+            boy.vy = 0;
+            boy.isGrounded = true;
+          } else {
+            boy.view.y += overlapY;
+            boy.vy = 0;
+          }
+        }
+      }
+    }
+
+    const groundY = this.app.screen.height * 0.82;
+
+    if (boy.view.y > groundY) {
+      boy.view.y = groundY;
+      boy.vy = 0;
+      boy.isGrounded = true;
+    }
+  }
+
+  private updateCamera() {
+    this.scene.position = -this.spineBoy.view.x + this.app.screen.width / 2.5;
+  }
+
   private startLoop(): void {
     this.app.ticker.add(() => {
       if (this.spineBoy.isSpawning()) return;
 
-      this.spineBoy.state.jump = this.controller.keys.space.pressed;
-
-      if (
-        (!this.controller.keys.left.doubleTap && this.controller.keys.left.pressed) ||
-        (!this.controller.keys.right.doubleTap && this.controller.keys.right.pressed)
-      ) {
-        this.spineBoy.state.walk =
-          this.controller.keys.left.pressed || this.controller.keys.right.pressed;
-      } else if (this.controller.keys.left.doubleTap) {
-        this.spineBoy.state.run = this.controller.keys.left.doubleTap;
-      } else if (this.controller.keys.right.doubleTap) {
-        this.spineBoy.state.run = this.controller.keys.right.doubleTap;
-      } else {
-        this.spineBoy.state.run = false;
-        this.spineBoy.state.walk = false;
-      }
-
-      if (this.controller.keys.left.pressed) {
-        this.spineBoy.direction = -1;
-      } else if (this.controller.keys.right.pressed) {
-        this.spineBoy.direction = 1;
-      }
-
-      if (this.controller.keys.down.pressed) {
-        this.spineBoy.state.hover = this.controller.keys.down.pressed;
-      } else {
-        this.spineBoy.state.hover = false;
-      }
+      this.handleInput();
+      //this.updatePhysics();
+      this.resolvePlatformCollisions();
+      this.updateCamera();
 
       this.spineBoy.update();
-      let speed = 0;
-
-      if (this.spineBoy.state.run) {
-        speed = 3.5;
-      } else if (this.spineBoy.state.hover) {
-        speed = 7;
-      } else if (this.spineBoy.state.walk) {
-        speed = 1.2;
-      }
-
-      if (this.spineBoy.state.walk || this.spineBoy.state.run || this.spineBoy.state.hover) {
-        this.spineBoy.view.x += speed * this.spineBoy.direction;
-      }
-
-      this.scene.position = -this.spineBoy.view.x + this.app.screen.width / 2.5;
-
-      if (this.controller.keys.space.pressed && this.spineBoy.isGrounded) {
-        this.spineBoy.jump();
-      }
-
-      this.spineBoy.vy += this.spineBoy.gravity;
-      this.spineBoy.view.y += this.spineBoy.vy;
-
-      this.spineBoy.isGrounded = false;
-
-      const charBounds = this.spineBoy.getBounds();
-
-      for (const platform of this.scene.platforms) {
-        const platBounds = new Rectangle(platform.x, platform.y, platform.width, platform.height);
-        if (this.rectIntersect(charBounds, platBounds)) {
-          if (this.spineBoy.vy > 0) {
-            this.spineBoy.view.y = platform.y;
-            this.spineBoy.vy = 0;
-            this.spineBoy.isGrounded = true;
-          }
-        }
-      }
-      const groundY = this.app.screen.height - this.scene.mainPlatform.height / 2.37;
-
-      if (this.spineBoy.view.y > groundY) {
-        this.spineBoy.view.y = groundY;
-        this.spineBoy.vy = 0;
-        this.spineBoy.isGrounded = true;
-      }
-
-      // this.spineBoy.update();
     });
   }
 }

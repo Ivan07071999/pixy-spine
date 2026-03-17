@@ -1,5 +1,5 @@
 import { Spine } from '@esotericsoftware/spine-pixi-v8';
-import { Container, Point, Rectangle } from 'pixi.js';
+import { Container, Point } from 'pixi.js';
 
 const animations = {
   idle: {
@@ -33,7 +33,11 @@ export class SpineBoy {
   state: { walk: boolean; run: boolean; hover: boolean; jump: boolean };
 
   public vy: number = 0;
+  public vx: number = 0;
   public gravity: number = 0.8;
+  private speedWalk: number = 3;
+  private speedRun: number = 6;
+  private speedHover: number = 8;
   public isGrounded: boolean = false;
   public jumpPower: number = -10;
 
@@ -55,6 +59,7 @@ export class SpineBoy {
     });
 
     this.view.scale.set(0.3);
+    this.view.pivot.set(0, 0);
     this.view.addChild(this.spine);
     this.spine.state.data.defaultMix = 0.2;
     this.spine.skeleton.data.animations.map((animation) =>
@@ -120,11 +125,12 @@ export class SpineBoy {
     this.view.scale.x = currentScale * value;
   }
 
-  public getBounds(): Rectangle {
-    const width = 50;
-    const height = 100;
+  public getBounds() {
+    return this.spine.getBounds();
+  }
 
-    return new Rectangle(this.view.x - width / 2, this.view.y - height, width, height);
+  public set speed(value: number) {
+    this.vx = value * this.direction;
   }
 
   public jump(): void {
