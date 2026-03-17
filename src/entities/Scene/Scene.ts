@@ -34,7 +34,6 @@ export class Scene {
       width: width,
       height: backgroundTexture.height,
     });
-
     this.midground = new TilingSprite({
       texture: midgroundTexture,
       width: width,

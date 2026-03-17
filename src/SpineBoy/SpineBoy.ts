@@ -35,7 +35,7 @@ export class SpineBoy {
   public vy: number = 0;
   public gravity: number = 0.8;
   public isGrounded: boolean = false;
-  public jumpPower: number = -15;
+  public jumpPower: number = -10;
 
   constructor() {
     this.state = {

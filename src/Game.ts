@@ -130,7 +130,7 @@ export class Game {
         this.spineBoy.isGrounded = true;
       }
 
-      this.spineBoy.update();
+      // this.spineBoy.update();
     });
   }
 }
