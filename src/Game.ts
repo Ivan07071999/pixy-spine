@@ -103,18 +103,20 @@ export class Game {
     }
   }
 
-  // private updatePhysics() {
-  //   const boy = this.spineBoy;
+  private updatePhysics() {
+    const boy = this.spineBoy;
 
-  //   boy.vy += boy.gravity;
+    boy.vy += boy.gravity;
 
-  //   if (boy.vy > 15) boy.vy = 15;
+    if (boy.vy > 12) boy.vy = 12;
 
-  //   boy.view.x += boy.vx;
-  //   boy.view.y += boy.vy;
+    if (boy.vy < -12) boy.vy = -12;
 
-  //   if (boy.vy > 0) boy.isGrounded = false;
-  // }
+    boy.view.x += boy.vx;
+    boy.view.y += boy.vy;
+
+    if (boy.vy > 0) boy.isGrounded = false;
+  }
 
   private resolvePlatformCollisions() {
     const boy = this.spineBoy;
@@ -176,7 +178,7 @@ export class Game {
       if (this.spineBoy.isSpawning()) return;
 
       this.handleInput();
-      //this.updatePhysics();
+      this.updatePhysics();
       this.resolvePlatformCollisions();
       this.updateCamera();
 
