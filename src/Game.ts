@@ -1,10 +1,11 @@
-import { Application, Bounds, Rectangle } from 'pixi.js';
+import { Application, Bounds, Container, Rectangle } from 'pixi.js';
 import { AssetManager } from './shared/Assets';
 import { initDevtools } from '@pixi/devtools';
 import { Scene } from './entities/Scene/Scene';
 import { SpineBoy } from './SpineBoy/SpineBoy';
 import { Controller } from './entities/Controller';
 import { Flag } from './shared/Flag';
+import { ModalWindow } from './shared/Modal';
 
 export class Game {
   private app: Application;
@@ -13,6 +14,9 @@ export class Game {
   private spineBoy!: SpineBoy;
   private controller: Controller;
   private flag!: Flag;
+  private isFinished: boolean = false;
+  private uiContainer!: Container;
+  private modal!: ModalWindow;
 
   constructor() {
     this.app = new Application();
@@ -41,10 +45,25 @@ export class Game {
     this.flag = new Flag();
     this.scene.worldLayer.addChild(this.spineBoy.view, this.flag);
 
+    this.uiContainer = new Container();
+    this.app.stage.addChild(this.uiContainer);
+
+    this.modal = new ModalWindow(
+      this.app.screen.width,
+      this.app.screen.height,
+      'Level finished',
+      'Restart',
+    );
+
+    this.modal.onClick(() => {
+      this.restartLevel();
+      this.modal.hide();
+    });
+
+    this.uiContainer.addChild(this.modal);
+
     this.spineBoy.spawn();
     this.startLoop();
-
-    //this.scene.position = -16500;
   }
 
   private rectIntersect(r1: Bounds | Rectangle, r2: Bounds | Rectangle): boolean {
@@ -178,6 +197,30 @@ export class Game {
     this.scene.position = -this.spineBoy.view.x + this.app.screen.width / 2.5;
   }
 
+  private restartLevel(): void {
+    const startX = screen.width / 2.5;
+    const startY = screen.height * 0.72;
+
+    this.spineBoy.reset(startX, startY);
+    this.scene.position = 0;
+    console.log('Уровень перезапущен');
+  }
+
+  private finishLevel(): void {
+    const flagBounds = this.flag.getBounds();
+    const boyBounds = this.spineBoy.getBounds();
+
+    if (this.rectIntersect(boyBounds, flagBounds)) {
+      if (!this.isFinished) {
+        console.log('FINISH, уровень пройден');
+        this.modal.show();
+        this.isFinished = true;
+      }
+    } else {
+      if (this.isFinished) this.isFinished = false;
+    }
+  }
+
   private startLoop(): void {
     this.app.ticker.add(() => {
       if (this.spineBoy.isSpawning()) return;
@@ -186,6 +229,7 @@ export class Game {
       this.updatePhysics();
       this.resolvePlatformCollisions();
       this.updateCamera();
+      this.finishLevel();
 
       this.spineBoy.update();
     });

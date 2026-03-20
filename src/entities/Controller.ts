@@ -40,20 +40,20 @@ export class Controller {
     const key = keyMap[event.code];
 
     if (!key) return;
-    console.log('Нажали', event.code);
+    // console.log('Нажали', event.code);
 
     const now = Date.now();
 
     this.keys[key].doubleTap = this.keys[key].doubleTap || now - this.keys[key].timestamp < 300;
     this.keys[key].pressed = true;
-    console.log('Нажали keys', this.keys);
+    // console.log('Нажали keys', this.keys);
   }
 
   public handleKeyUp(event: KeyboardEvent): void {
     const key = keyMap[event.code];
 
     if (!key) return;
-    console.log('Отпустили', event.code);
+    // console.log('Отпустили', event.code);
 
     const now = Date.now();
     this.keys[key].pressed = false;
@@ -63,6 +63,6 @@ export class Controller {
     } else {
       this.keys[key].timestamp = now;
     }
-    console.log('Отпустили keys', this.keys);
+    // console.log('Отпустили keys', this.keys);
   }
 }

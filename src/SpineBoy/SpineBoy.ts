@@ -1,7 +1,7 @@
 import { Spine } from '@esotericsoftware/spine-pixi-v8';
 import { Container, Point } from 'pixi.js';
 
-const animations = {
+export const animations = {
   idle: {
     name: 'idle',
     loop: true,
@@ -35,9 +35,6 @@ export class SpineBoy {
   public vy: number = 0;
   public vx: number = 0;
   public gravity: number = 0.8;
-  private speedWalk: number = 3;
-  private speedRun: number = 6;
-  private speedHover: number = 8;
   public isGrounded: boolean = false;
   public jumpPower: number = -10;
 
@@ -84,7 +81,7 @@ export class SpineBoy {
 
     const entry = this.spine.state.setAnimation(0, name, loop);
     entry.timeScale = timeScale;
-    console.log('PlayingAnimation', this.state);
+    // console.log('PlayingAnimation', this.state);
   }
 
   public update(): void {
@@ -138,5 +135,20 @@ export class SpineBoy {
       this.vy = this.jumpPower;
       this.isGrounded = false;
     }
+  }
+
+  public reset(x: number, y: number) {
+    this.view.x = x;
+    this.view.y = y;
+
+    this.vx = 0;
+    this.vy = 0;
+
+    this.isGrounded = false;
+    this.state = { walk: false, run: false, hover: false, jump: false };
+
+    this.direction = 1;
+
+    this.spawn();
   }
 }
