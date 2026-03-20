@@ -4,6 +4,7 @@ import { initDevtools } from '@pixi/devtools';
 import { Scene } from './entities/Scene/Scene';
 import { SpineBoy } from './SpineBoy/SpineBoy';
 import { Controller } from './entities/Controller';
+import { Flag } from './shared/Flag';
 
 export class Game {
   private app: Application;
@@ -11,6 +12,7 @@ export class Game {
   private scene!: Scene;
   private spineBoy!: SpineBoy;
   private controller: Controller;
+  private flag!: Flag;
 
   constructor() {
     this.app = new Application();
@@ -36,10 +38,13 @@ export class Game {
 
     await initDevtools(this.app);
     this.app.stage.addChild(this.scene.view);
-    this.scene.worldLayer.addChild(this.spineBoy.view);
+    this.flag = new Flag();
+    this.scene.worldLayer.addChild(this.spineBoy.view, this.flag);
 
     this.spineBoy.spawn();
     this.startLoop();
+
+    //this.scene.position = -16500;
   }
 
   private rectIntersect(r1: Bounds | Rectangle, r2: Bounds | Rectangle): boolean {

@@ -5,6 +5,7 @@ import midgroungURL from '../assets/midground.png';
 import mainPlatform from '../assets/main-platform.png';
 import backgroundURL from '../assets/background.png';
 import metalPlatformURL from '../assets/metal-platform.png';
+import flag from '../assets/flag.png';
 
 export class AssetManager {
   private initialized: boolean;
@@ -40,6 +41,10 @@ export class AssetManager {
       {
         alias: 'metalPlatform',
         src: metalPlatformURL,
+      },
+      {
+        alias: 'flag',
+        src: flag,
       },
     ]);
 
