@@ -45,6 +45,7 @@ export class SpineBoy {
       hover: false,
       jump: false,
     };
+
     this.view = new Container({
       position: new Point(screen.width / 2.5, screen.height * 0.72),
       scale: new Point(2, 2),
@@ -59,9 +60,6 @@ export class SpineBoy {
     this.view.pivot.set(0, 0);
     this.view.addChild(this.spine);
     this.spine.state.data.defaultMix = 0.2;
-    this.spine.skeleton.data.animations.map((animation) =>
-      console.log(` Анимация: ${animation.name}, длительность: ${animation.duration}`),
-    );
   }
 
   public spawn(): void {
@@ -81,7 +79,6 @@ export class SpineBoy {
 
     const entry = this.spine.state.setAnimation(0, name, loop);
     entry.timeScale = timeScale;
-    // console.log('PlayingAnimation', this.state);
   }
 
   public update(): void {

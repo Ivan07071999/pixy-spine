@@ -1,13 +1,7 @@
 import { Container, TilingSprite, Texture } from 'pixi.js';
 import platformData from '../../shared/firstLvl.json';
 import { Platform } from './Platform';
-
-interface PlatformData {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
+import type { PlatformData } from '../../shared/types';
 
 export class Scene {
   public view: Container;
@@ -34,6 +28,7 @@ export class Scene {
       width: width,
       height: backgroundTexture.height,
     });
+
     this.midground = new TilingSprite({
       texture: midgroundTexture,
       width: width,
@@ -65,7 +60,6 @@ export class Scene {
   }
 
   public get position(): number {
-    // return this.mainPlatform.tilePosition.x;
     return this.worldLayer.x;
   }
 
@@ -82,6 +76,5 @@ export class Scene {
       this.worldLayer.addChild(platform);
       this.platforms.push(platform);
     });
-    console.log('Загрузили платформы', this.platforms);
   }
 }

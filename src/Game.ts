@@ -203,7 +203,6 @@ export class Game {
 
     this.spineBoy.reset(startX, startY);
     this.scene.position = 0;
-    console.log('Уровень перезапущен');
   }
 
   private finishLevel(): void {
@@ -212,7 +211,6 @@ export class Game {
 
     if (this.rectIntersect(boyBounds, flagBounds)) {
       if (!this.isFinished) {
-        console.log('FINISH, уровень пройден');
         this.modal.show();
         this.isFinished = true;
       }

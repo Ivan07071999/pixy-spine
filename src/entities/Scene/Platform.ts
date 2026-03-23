@@ -8,7 +8,6 @@ export class Platform extends Container {
     super();
 
     const texture = Texture.from('metalPlatform');
-    console.log('Текстура', texture);
 
     this.sprite = new TilingSprite({
       texture,

@@ -11,6 +11,5 @@ export class Flag extends Container {
     this.sprite.position.x = 24150;
     this.sprite.position.y = 180;
     this.addChild(this.sprite);
-    console.log('FLAG', this.sprite);
   }
 }

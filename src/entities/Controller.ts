@@ -1,16 +1,4 @@
-interface IKey {
-  pressed: boolean;
-  doubleTap: boolean;
-  timestamp: number;
-}
-
-interface IKeys {
-  up: IKey;
-  right: IKey;
-  space: IKey;
-  left: IKey;
-  down: IKey;
-}
+import type { IKeys } from '../shared/types';
 
 const keyMap: Record<string, keyof IKeys> = {
   KeyD: 'right',
@@ -32,6 +20,7 @@ export class Controller {
       down: { pressed: false, doubleTap: false, timestamp: 0 },
       space: { pressed: false, doubleTap: false, timestamp: 0 },
     };
+
     window.addEventListener('keydown', (event) => this.handleKeyDown(event));
     window.addEventListener('keyup', (event) => this.handleKeyUp(event));
   }
@@ -40,20 +29,17 @@ export class Controller {
     const key = keyMap[event.code];
 
     if (!key) return;
-    // console.log('Нажали', event.code);
 
     const now = Date.now();
 
     this.keys[key].doubleTap = this.keys[key].doubleTap || now - this.keys[key].timestamp < 300;
     this.keys[key].pressed = true;
-    // console.log('Нажали keys', this.keys);
   }
 
   public handleKeyUp(event: KeyboardEvent): void {
     const key = keyMap[event.code];
 
     if (!key) return;
-    // console.log('Отпустили', event.code);
 
     const now = Date.now();
     this.keys[key].pressed = false;
@@ -63,6 +49,5 @@ export class Controller {
     } else {
       this.keys[key].timestamp = now;
     }
-    // console.log('Отпустили keys', this.keys);
   }
 }
